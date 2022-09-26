@@ -127,10 +127,10 @@ const extractCoordinates = async (trails, setInfo) => {
           coordinates.push(c1);
         });
       }
-      
+
     } catch (error) {
       await sqlStatement('UPDATE rutas SET coordenadas = 0 WHERE id = ?', [trail.id]);
-    }  finally {
+    } finally {
       done();
     }
   }
@@ -166,7 +166,7 @@ const extractCoordinatesGPX = (xml) => {
     let ele = element.getElementsByTagName('ele')[0];
     ele = parseFloat(ele.childNodes[0].data);
     let time = element.getElementsByTagName('time')[0];
-    time = time.childNodes[0].data;
+    time = time != undefined ? time.childNodes[0].data : '0';
 
     let c = { lat: lat, lon: lon, ele: ele, time: time };
     coordinates.push(c);
@@ -188,7 +188,7 @@ const extractLinkGPX = async (link) => {
   text = text.trim().split(/[\s,\t,\n]+/).join(' ');
   //console.log('despues de quitar espacios', text.length);
 
-  let fin = text.indexOf('Track de la ruta');
+  let fin = text.indexOf('Track', text.indexOf('.gpx'));
   if (fin == -1) { return null; }
   //console.log('extraer href fin', fin);
 
@@ -200,7 +200,6 @@ const extractLinkGPX = async (link) => {
 
   text = text.split(' ');
   text = text.find((str) => str.startsWith('href'));
-  //console.log('attr href', text);
 
   let gpxlink = text.substring(6, text.length - 1);
 
@@ -317,9 +316,10 @@ const Load = ({ route, navigation }) => {
       });
       insertSQL = insertSQL.substring(0, insertSQL.length - 1) + ';';
       await sqlStatement(insertSQL);
+      await sqlStatement('UPDATE rutas SET coordenadas = 1 WHERE id = ?', [trail.id]);
 
       setInfo('Cargando ruta...');
-      coordinates = await selectDatabase(`
+      coordinates = await sqlStatement(`
         SELECT id, lat, lon
         FROM coordenadas
         WHERE ruta = ?
@@ -344,6 +344,12 @@ const Load = ({ route, navigation }) => {
 
       setInfo('Loading trails...');
       let trails = await sqlStatement('SELECT * FROM rutas ORDER BY name');
+      for (let i = 0; i < trails.length; i++) {
+        if (trails[i].coordenadas == 1) {
+          let coordenadas = await sqlStatement(`SELECT id, lat, lon FROM coordenadas WHERE ruta = ? ORDER BY id`, [trails[i].id]);
+          trails[i].coordenadas = coordenadas;
+        }
+      }
       afterLoad(trails);
 
     } catch (error) {
@@ -372,7 +378,7 @@ const Load = ({ route, navigation }) => {
 
     } catch (error) {
       console.error(error.toString());
-      Alert.alert('Error', error.toString());
+      Alert.alert('Load error', error.toString());
     }
 
   }
@@ -420,8 +426,13 @@ const Load = ({ route, navigation }) => {
       //read from database
       setInfo('Cargando rutas...');
       let trails = await sqlStatement('SELECT * FROM rutas ORDER BY name');
+      for (let i = 0; i < trails.length; i++) {
+        if (trails[i].coordenadas == 1) {
+          let coordenadas = await sqlStatement(`SELECT id, lat, lon FROM coordenadas WHERE ruta = ? ORDER BY id`, [trail[i].id]);
+          trails[i].coordenadas = coordenadas;
+        }
+      }
       afterLoad(trails);
-
 
     } catch (error) {
       console.error(error.toString());

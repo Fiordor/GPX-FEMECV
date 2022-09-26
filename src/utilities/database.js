@@ -124,10 +124,10 @@ export const sqlStatement = async (sql, args = []) => {
 
     db.executeSql( sql, args,
       (result) => {
-        if (sql.startsWith('SELECT')) {
+        if (sql.trim().startsWith('SELECT')) {
           resolve(parseSQLResult(result.rows));
         } else {
-          resolve();
+          resolve(true);
         }
       }, (error) => {
         reject(error.message);

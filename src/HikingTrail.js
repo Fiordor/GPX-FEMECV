@@ -1,4 +1,5 @@
 
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import { LeafletView, MapShapeType, OWN_POSTION_MARKER_ID } from 'react-native-leaflet-view';
@@ -69,7 +70,7 @@ const HikingTrail = ({ route, navigation }) => {
     setTrail(params.trail);
 
     if (params.error != undefined) {
-      Alert.alert('Error', params.error);
+      //Alert.alert('Error', params.error);
       navigation.navigate('Trails');
       return;
     }
@@ -93,7 +94,8 @@ const HikingTrail = ({ route, navigation }) => {
 
     let mark = {
       position: points[0],
-      icon: '!',
+      icon: '*',
+      title: trail.name,
       size: [32, 32]
     }
     setMapMarkers([mark]);

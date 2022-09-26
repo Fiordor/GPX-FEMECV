@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Button, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import DomParser from 'react-native-html-parser';
+import { LeafletView, MapShapeType } from 'react-native-leaflet-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from './IconButton';
 import Load from './Load';
@@ -37,7 +38,7 @@ const TrailFilter = ({ navigation }) => {
     }
     out = out.sort();
 
-    navigation.navigate('Picker', { pickerID: 'picker', screen: 'Trails', array: out });
+    navigation.navigate('PickerZona', { pickerID: 'picker', screen: 'Trails', array: out });
   }
 
   let alphabetList = ALPHABET.map((a) => {
@@ -58,7 +59,9 @@ const TrailFilter = ({ navigation }) => {
   );
 }
 
-const TrailList = ({ trails, trailsLength, openItem }) => {
+const TrailList = ({ hide = false, trails, trailsLength, openItem }) => {
+
+  if (hide) return null;
 
   const renderItem = ({ item }) => {
 
@@ -92,29 +95,27 @@ const TrailList = ({ trails, trailsLength, openItem }) => {
   }
 }
 
-const TrailMap = ({ updateCoordinates }) => {
+const TrailMap = ({ hide = false, map }) => {
 
-  if (global.trails.some(t => { return t.coordenadas == null })) {
-    return (
-      <View style={styles.fullscreenCenter}>
-        <Button
-          onPress={() => { updateCoordinates(); }}
-          title='Cargar mapa'
-        />
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.fullscreen}>
-        <Text>Están todos cargados</Text>
-      </View>
-    );
-  }
+  if (hide || map == null) return null;
 
+  return (
+    <View style={styles.fullscreen}>
+      <LeafletView
+        onMessageReceived={(msg) => { console.log(msg) }}
+        mapMarkers={map.mapMarkers}
+        mapShapes={map.mapShapes}
+        mapCenterPosition={map.mapCenterPosition}
+        doDebug={false}
+      />
+    </View>
+  );
 }
 
 const Trails = ({ route, navigation }) => {
 
+  const [list, setList] = useState(true);
+  const [map, setMap] = useState({ mapCenterPosition: null, mapMarkers: [], mapShapes: [], });
   const [trails, setTrails] = useState([]);
   const [trailsLength, setTrailsLength] = useState('cargando...');
 
@@ -130,19 +131,56 @@ const Trails = ({ route, navigation }) => {
     navigation.navigate('HikingTrail', { trail: trail });
   }
 
-  const updateCoordinates = () => {
-    navigation.navigate('Load', { loadID: 'id', screen: 'Trails', load: 'update-coordinates' });
-  }
-
   const updateTrails = () => {
     navigation.navigate('Load', { loadID: 'id', screen: 'Trails', load: 'update-trails' });
   }
 
   const afterLoad = (t) => {
     if (t.length) {
+
+      const random = () => { return Math.floor(Math.random() * 255); }
+
       global.trails = t;
       setTrails(t);
       setTrailsLength(t.length);
+
+      let markers = [], shapes = [], center = null;
+      let centerPoints = { hmax: null, hmin: null, wmax: null, wmin: null }
+      t.forEach(trail => {
+        if (trail.coordenadas != null && trail.coordenadas != 0 && trail.coordenadas.length > 0) {
+          let points = [];
+          trail.coordenadas.forEach(c => { points.push({ lat: c.lat, lng: c.lon }); });
+          let color = `rgb(${random()}, ${0}, ${random()})`;
+          let shape = { color: color, positions: points, shapeType: MapShapeType.POLYLINE, center: points[0] };
+          let mark = { id: trail.id, position: points[0], icon: '*', title: trail.name, size: [32, 32] };
+
+          if (centerPoints.hmax == null) {
+            centerPoints.hmax = points[0].lat;
+            centerPoints.hmin = points[0].lat;
+            centerPoints.wmax = points[0].lng;
+            centerPoints.wmin = points[0].lng;
+          }
+
+          if (points[0].lat > centerPoints.hmax) { centerPoints.hmax = points[0].lat; }
+          else if (points[0].lat < centerPoints.hmin) { centerPoints.hmin = points[0].lat; }
+
+          if (points[0].lng > centerPoints.wmax) { centerPoints.wmax = points[0].lng; }
+          else if (points[0].lng < centerPoints.wmin) { centerPoints.wmin = points[0].lng; }
+
+          markers.push(mark);
+          shapes.push(shape);
+        }
+      });
+
+      if (centerPoints != null) {
+        center = {
+          lat: ( (centerPoints.hmax + centerPoints.hmin) / 2 ),
+          lng: ( (centerPoints.wmax + centerPoints.wmin) / 2 )
+        }
+      }
+
+      setMap({ mapCenterPosition: center, mapMarkers: markers, mapShapes: shapes });
+
     } else {
       updateTrails();
     }
@@ -172,16 +210,20 @@ const Trails = ({ route, navigation }) => {
       <TrailFilter
         navigation={navigation}
         filter={filter} />
+      <Button
+        onPress={() => { setList(!list) }}
+        title='Cambiar'
+      />
       <TrailMap
-        updateCoordinates={updateCoordinates}
-        />
-      {/*
+        hide={list}
+        map={map}
+      />
       <TrailList
+        hide={!list}
         trails={trails}
         trailsLength={trailsLength}
         openItem={openItem}
       />
-      */}
       <Text>{trailsLength}</Text>
     </SafeAreaView>
   );

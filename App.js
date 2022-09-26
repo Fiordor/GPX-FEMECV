@@ -31,7 +31,7 @@ import {
 import Load from './src/Load';
 
 import Trails from './src/Trails';
-import Picker from './src/Picker';
+import PickerZona from './src/PickerZona';
 import HikingTrail from './src/HikingTrail';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -95,8 +95,8 @@ const App = () => {
           name="HikingTrail"
           component={HikingTrail} />
         <Stack.Screen
-          name='Picker'
-          component={Picker} />
+          name='PickerZona'
+          component={PickerZona} />
       </Stack.Navigator>
     </NavigationContainer>
   );
