@@ -9,6 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from './IconButton';
 import Load from './Load';
 import Toolbar from './Toolbar';
+import TrailsList from './TrailsList';
+import TrailsMap from './TrailsMap';
 
 const TrailFilter = ({ navigation }) => {
 
@@ -59,59 +61,6 @@ const TrailFilter = ({ navigation }) => {
   );
 }
 
-const TrailList = ({ hide = false, trails, trailsLength, openItem }) => {
-
-  if (hide) return null;
-
-  const renderItem = ({ item }) => {
-
-    return (
-      <TouchableOpacity
-        style={item.coordenadas == 0 ? styles.itemDisabled : styles.item}
-        disabled={item.coordenadas == 0}
-        onPress={() => { openItem(item); }}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text>{item.estado}</Text>
-        <Text>{item.municipio} / {item.entidad}</Text>
-        <Text>{item.tiempo} {item.subida} {item.bajada}</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  if (trails.length) {
-    return (
-      <FlashList
-        data={trails}
-        renderItem={renderItem}
-        estimatedItemSize={120}
-      />
-    );
-  } else {
-    return (
-      <View style={styles.fullcontainer}>
-        <Text>Trails: {trailsLength}</Text>
-      </View>
-    );
-  }
-}
-
-const TrailMap = ({ hide = false, map }) => {
-
-  if (hide || map == null) return null;
-
-  return (
-    <View style={styles.fullscreen}>
-      <LeafletView
-        onMessageReceived={(msg) => { console.log(msg) }}
-        mapMarkers={map.mapMarkers}
-        mapShapes={map.mapShapes}
-        mapCenterPosition={map.mapCenterPosition}
-        doDebug={false}
-      />
-    </View>
-  );
-}
-
 const Trails = ({ route, navigation }) => {
 
   const [list, setList] = useState(true);
@@ -142,7 +91,12 @@ const Trails = ({ route, navigation }) => {
 
       global.trails = t;
       setTrails(t);
-      setTrailsLength(t.length);
+
+      let cont = 0;
+      t.forEach(trail => {
+        if (trail.tiempo == '' && trail.subida == '' && trail.bajada == '') cont++;
+      });
+      setTrailsLength(cont);
 
       let markers = [], shapes = [], center = null;
       let centerPoints = { hmax: null, hmin: null, wmax: null, wmin: null }
@@ -214,11 +168,12 @@ const Trails = ({ route, navigation }) => {
         onPress={() => { setList(!list) }}
         title='Cambiar'
       />
-      <TrailMap
+      <TrailsMap
         hide={list}
         map={map}
+        openItem={openItem}
       />
-      <TrailList
+      <TrailsList
         hide={!list}
         trails={trails}
         trailsLength={trailsLength}
