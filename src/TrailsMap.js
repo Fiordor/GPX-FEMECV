@@ -12,7 +12,7 @@ const TrailsMap = ({ hide = false, map, openItem }) => {
 
   const onMessageReceived = (msg) => {
 
-    console.log(msg);
+    //console.log(msg);
     if (msg.event == 'onMapMarkerClicked') {
       let localTrail = global.trails.find((t) => { return t.id == msg.payload.mapMarkerID; });
       setTrail(localTrail);
