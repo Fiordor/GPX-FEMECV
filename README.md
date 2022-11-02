@@ -5,5 +5,5 @@ React Native project. Use local storage with SQLite, Leaflet as map library, ren
 1. Connect smartphone to PC
 2. Active USB debuggin
 3. Active data transfer
-4. Run project ```sh npx react-native start```
-5. Run project on android ```sh npx react-native run-android```
+4. Run project ```npx react-native start```
+5. Run project on android ```npx react-native run-android```
