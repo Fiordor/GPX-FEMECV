@@ -28,11 +28,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import Load from './src/Load';
-
-import Trails from './src/Trails';
-import PickerZona from './src/PickerZona';
-import HikingTrail from './src/HikingTrail';
+import PageLoad from './src/PageLoad';
+import PageHome from './src/PageHome';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'
@@ -86,17 +83,11 @@ const App = () => {
       <Stack.Navigator initialRouteName='Trails'
         screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name='Load'
-          component={Load} />
+          name='PageLoad'
+          component={PageLoad} />
         <Stack.Screen
-          name="Trails"
-          component={Trails} />
-        <Stack.Screen
-          name="HikingTrail"
-          component={HikingTrail} />
-        <Stack.Screen
-          name='PickerZona'
-          component={PickerZona} />
+          name="PageHome"
+          component={PageHome} />
       </Stack.Navigator>
     </NavigationContainer>
   );

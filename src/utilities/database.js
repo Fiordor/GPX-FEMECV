@@ -69,6 +69,7 @@ const parseSQLResult = (rows) => {
   return array;
 }
 
+/*
 export const deleteCoordinates = async (ruta) => {
 
   return new Promise((resolve, reject) => {
@@ -116,6 +117,7 @@ export const selectDatabase = async (sql, args = []) => {
     );
   });
 }
+*/
 
 export const sqlStatement = async (sql, args = []) => {
   return new Promise((resolve, reject) => {
