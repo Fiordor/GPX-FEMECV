@@ -27,13 +27,13 @@ const readTrailInfo = (node) => {
     photo: '',
     link: '',
     name: '',
-    entidad: '',
-    estado: '',
-    municipio: '',
-    distancia: '',
-    tiempo: '',
-    subida: '',
-    bajada: ''
+    entity: '',
+    condition: '',
+    town: '',
+    distance: '',
+    time: '',
+    ascent: '',
+    descent: ''
   }
 
   let parser = new DomParser.DOMParser();
@@ -57,18 +57,28 @@ const readTrailInfo = (node) => {
 
   info.name = getChild2Node(link, 1, 0);
 
-  info.entidad = getChild2Node(denominacionSendero, 5, 0).substring(19);
-  info.estado = getChild2Node(denominacionSendero, 7, 0).substring(27);
+  info.entity = getChild2Node(denominacionSendero, 5, 0).substring(19);
+  info.condition = getChild2Node(denominacionSendero, 7, 0).substring(27);
 
   let datosSendero = infoResumen.childNodes.item(3);
 
-  info.municipio = getChild2Node(datosSendero, 1, 1);
-  info.distancia = getChild2Node(datosSendero, 3, 2);
-  info.tiempo = getChild2Node(datosSendero, 5, 2);
-  info.subida = getChild2Node(datosSendero, 7, 2);
-  info.bajada = getChild2Node(datosSendero, 9, 2);
+  info.town = getChild2Node(datosSendero, 1, 1);
+  info.distance = getChild2Node(datosSendero, 3, 2);
+  info.time = getChild2Node(datosSendero, 5, 2);
+  info.ascent = getChild2Node(datosSendero, 7, 2);
+  info.descent = getChild2Node(datosSendero, 9, 2);
+
+  info.name = specialChars(info.name);
+  info.entity = specialChars(info.entity);
+  info.condition = specialChars(info.condition);
+  info.town = specialChars(info.town);
 
   return info;
+}
+
+const specialChars = (str) => {
+  let result = str.replaceAll(`"`, '');
+  return result.replaceAll(`'`, '');
 }
 
 
@@ -90,9 +100,15 @@ const readTrails = async (setInfo = null) => {
 
   return new Promise(async (resolve, reject) => {
 
-    let index = 1, code = 200, rutas = [], cont = 0;
+    let index = 1, code = 200, cont = 0;
+    let mapTrail = new Map();
 
-    const done = () => { if (code != 200 && cont == index - 1) { resolve(rutas); } }
+    const done = () => {
+      if (code != 200 && cont == index - 1) {
+        mapTrail = Array.from(mapTrail.values());
+        resolve(mapTrail);
+      }
+    }
 
     while (code == 200) {
 
@@ -115,11 +131,7 @@ const readTrails = async (setInfo = null) => {
             let node = row.childNodes.item(i);
             if (!isNodeEmpty(node)) {
               let n = readTrailInfo(node);
-              //############################
-              //CAMBIAR EL BUSCAR DUPLICADOS
-              //############################
-              if (rutas.find(r => r.link == n.link) == undefined) {
-                rutas.push(n);
+              if (!mapTrail.has(n.link)) { mapTrail.set(n.link, n);
               }
             }
           }
@@ -134,12 +146,11 @@ const readTrails = async (setInfo = null) => {
 }
 
 
-class web {
+class Web {
 
   static cleanCache = cleanCache;
 
   static getTrails = readTrails;
-
 }
 
-export default web;
+export default Web;

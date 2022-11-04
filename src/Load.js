@@ -3,7 +3,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import DomParser from 'react-native-html-parser';
-import { deleteCoordinates, deleteRutas, initDatabase, insertCoordinate, insertRuta, insertRutas, selectDatabase, sqlStatement } from './utilities/database';
+import { deleteCoordinates, deleteRutas, initDatabase, insertCoordinate, insertRuta, insertRutas, selectDatabase, sqlStatement } from './utilities/database1';
 
 const DOMAIN = 'https://senders.femecv.com/';
 const RESET = 'https://senders.femecv.com/es/senderos/reset';
