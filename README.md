@@ -20,7 +20,7 @@ React Native project. Use local storage with SQLite, Leaflet as map library, ren
     + Filter page has a picker with the alphabet which filter a list of towns.
 
 ### Load page
-When run the app, first, if not exists create the database. Then try to get data from DB, if is empty start to download every trails information. After that, get data from DB and format into array object to work with adding visible attribute to make easy the filter process. As the id number is asigned sequentially we can use the array as map data, where the key is the id trail. If the trail has points, use the weak type and asign the array points in points attribute of trail object. When the process finish, pass the trails to Home page.
+When run the app, first, if not exists create the database. Then try to get data from DB, if is empty start to download every trails information. After that, get data from DB and format into array object to work with. As the id number is asigned sequentially we can use the array as map data, where the key is the id -1 trail. If the trail has points, use the weak type and asign the array points in points attribute of trail object. When the process finish, pass the trails to Home page.
 
 The request is page by page, and each page has several trails. Is made page by page beacuse do not know which is the limit, but can be interesting test which is better: one by one, or multiple request.
 
@@ -85,11 +85,23 @@ mapTime += finish - start;
 //console.log(mapTime) => 7
 ```
 
-The object methods is close to map, in fact, there are time that can be faster than map, but the most of the cases, map is better.
+The object methods is close to map, in fact, there are times that can be faster than map, but the most of the cases, map is better.
 
 
 ### Home page
-If there is no data, show a warning, else show the map as default. The home page can show the trails in a map or list.
+If there is no data, show a warning, else show the map as default. The home page can show the trails in a map or list. In the toolbar can open the manager page. Also has two buttons, one to search which indicates the town about looking for and open the filter page, the other change the display between map and list.
+
+<img src="./doc_img/page_home.png" height="250" alt="page_home">
+
+The Home page allways must recive the follow json as params:
+```
+{
+    trails: Array,
+    filter: trail.town | undefined,
+    filterTrails: //en proceso de estudio,
+    show: 'map' | 'list'
+}
+```
 
 ### Manager page
 

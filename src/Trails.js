@@ -6,7 +6,7 @@ import { Alert, Button, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity
 import DomParser from 'react-native-html-parser';
 import { LeafletView, MapShapeType } from 'react-native-leaflet-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import IconButton from './IconButton';
+import IconButton from './components/IconButton';
 import Load from './Load';
 import Toolbar from './Toolbar';
 import TrailsList from './TrailsList';

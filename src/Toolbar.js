@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import IconButton from './IconButton';
+import IconButton from './components/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 const Toolbar = ({ styleAbsolute = false, left = null, leftIcon = null, right = null, rightIcon = null, title = null }) => {

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { LeafletView } from 'react-native-leaflet-view';
-import IconButton from './IconButton';
+import IconButton from './components/IconButton';
 
 const TrailsMap = ({ hide = false, map, openItem }) => {
 
