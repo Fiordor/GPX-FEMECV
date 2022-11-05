@@ -1,39 +1,39 @@
+import { FlashList } from '@shopify/flash-list';
 import React, { useEffect, useState } from 'react';
-import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from './components/IconButton';
 import Toolbar from './components/Toolbar';
 
-const TrailsList = ({ hide = false, trails, trailsLength, openItem }) => {
-
-  if (hide) return null;
+const DownloadList = ({ hide = false, array, openItem }) => {
 
   const renderItem = ({ item }) => {
 
     return (
       <TouchableOpacity
-        style={item.coordenadas == 0 ? styles.itemDisabled : styles.item}
-        disabled={item.coordenadas == 0}
-        onPress={() => { openItem(item); }}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text>{item.estado}</Text>
-        <Text>{item.municipio}</Text>
-        <Text style={styles.itemDetails}>
-          <FontAwesomeIcon icon={['fas', 'stopwatch']} size={12} />&nbsp;
-          {item.tiempo.length ? item.tiempo : '--:--:--'}&nbsp;
-          <FontAwesomeIcon icon={['fas', 'arrow-trend-up']} size={12} />&nbsp;
-          {item.subida.length ? item.subida : '-- m'}&nbsp;
-          <FontAwesomeIcon icon={['fas', 'arrow-trend-down']} size={12} />&nbsp;
-          {item.bajada.length ? item.bajada : '-- m'}
-        </Text>
+        style={styles.item}
+        //disabled={item.coordenadas == 0}
+        onPress={() => { openItem(item.key); }}>
+        <Text>{item.key}</Text>
+        <Text>{item.size}</Text>
       </TouchableOpacity>
     );
   }
 
-  <FlashList
-    data={trails}
-    renderItem={renderItem}
-    estimatedItemSize={120} />
+  useEffect(() => {
+    //console.log(array)
+  }, [array]);
+
+  //if (hide || array == undefined) return null;
+
+  return (
+    <View style={styles.list}>
+      <FlashList
+        data={array}
+        renderItem={renderItem}
+        estimatedItemSize={80} />
+    </View>
+  );
 }
 
 const PageManager = ({ route, navigation }) => {
@@ -43,6 +43,18 @@ const PageManager = ({ route, navigation }) => {
   const [updateTrails, setUpdateTrails] = useState(new Map());
   const [queueTrails, setQueueTrails] = useState([]);
   const [progress, setProgress] = useState(0);
+
+  const mapToArray = (map) => {
+    let array = Array.from(map.keys());
+    for (let i = 0; i < array.length; i++) {
+      array[i] = { key: array[i], size: map.get(array[i]).length };
+    }
+    return array
+  }
+
+  const addToQueue = (town) => {
+    console.log(town);
+  }
 
   useEffect(() => {
 
@@ -68,6 +80,15 @@ const PageManager = ({ route, navigation }) => {
       }
     });
 
+    setDownloadTrails(new Map([...downloadTrails].sort()));
+    setUpdateTrails(new Map([...updateTrails].sort()));
+
+    /*
+    mapToArray(orderDownloadTrails).forEach(element => {
+      console.log(element)
+    });
+    */
+
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       navigation.navigate('PageHome', params);
       return true;
@@ -89,7 +110,10 @@ const PageManager = ({ route, navigation }) => {
         <IconButton style={styles.btHeader} title='Update' />
         <IconButton style={styles.btHeader} title='Queue' />
       </View>
-      <Text>{'hola\ngola'}</Text>
+      <DownloadList
+        array={mapToArray(downloadTrails)}
+        openItem={addToQueue}
+      />
     </SafeAreaView>
   );
 }
@@ -109,6 +133,18 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     marginRight: 4,
     flex: 1
+  },
+  listContainer: {
+    backgroundColor: '#c073e8',
+    flex: 1
+  },
+  list: {
+    flex: 3,
+    backgroundColor: '#006ac7'
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   btFilter: {
     flexDirection: 'row',

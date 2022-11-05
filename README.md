@@ -103,10 +103,10 @@ The Home page allways must recive the follow json as params:
 ```
 
 ### Manager page
-Download or update data.Like this is a small project, I do not contemplate that the trails info will be update, just them points. The page has an indicator of queue length and three buttons to change view.
-+ Download: list the trails whose points attribute is null, this means that we have not downloaded before the data.
-+ Update: list the trails whose points attribute is false or an array, this means that the trail has not points or it has
-+ Queue: list the trails to process.
+Download or update data. Like this is a small project, I do not contemplate the trails info will be update, just its points. The page has an indicator of queue length and three buttons to change view.
++ Download: list the trails whose points attribute is null, this means that we have not downloaded before the points.
++ Update: list the trails whose points attribute is false or an array, this means that the trail has or not points.
++ Queue: list of trails to process.
 
 <img src="./doc_img/page_manager.png" height="250" alt="page_manager">
 
@@ -121,9 +121,9 @@ The Manager page allways must recive the follow json as params:
 
 To process the trails use the next steps:
 
-With the main trails array, loop all the array and split the data into two types: downloadTrails, the trails whose points attribute is null and we do not know if has data or updateTrails, the trails whose points attribute has information. The data structure is Map (I studied before that object with string index is less efficient than Map object). The key is the town, the value to group the trails, and the value is an array of trails with the same town.
+With the main trails array, loop all the array and split the data into two types: downloadTrails, the trails whose points attribute is null and we do not know if has data or updateTrails, the trails whose points attribute has information. The data structure is Map (we studied before that object with string index is less efficient than Map object). The key is the town, the value to group every trails, and the value is an array of trails with the same town.
 
-When press download or update item, it pass to disabled and duplicate into queueTrails. One by one, delete if has data on DB and request its points. The save it and update the item. Also must update the main trails. Finally add the item to updateTrails if not exists and delete from downloadTrails if exists.
+When press download or update item, it pass into queueTrails. One by one, delete if has data on DB and request its points. Then save it and update the item. Also must update the main trails array. Finally add the item to updateTrails if not exists and delete from downloadTrails if exists.
 
 ### Filter page
 
