@@ -7,16 +7,16 @@ import Toolbar from './components/Toolbar';
 const PageHome = ({ route, navigation }) => {
 
   const [trails, setTrails] = useState([]);
-  const [show, setShow] = useState('map');
+  const [view, setView] = useState('map');
 
-  const openPage = (page) => {
-
+  const openPageManager = () => {
+    navigation.navigate('PageManager', { trails: trails });
   }
 
   useEffect(() => {
 
     setTrails(route.params.trails);
-    setShow(route.params.show);
+    setView(route.params.view);
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       console.log('back');
@@ -31,18 +31,18 @@ const PageHome = ({ route, navigation }) => {
       <Toolbar
         leftText={'GPX'}
         rightIcon={'rotate'}
-        rightButton={() => {}}
+        rightButton={() => { openPageManager(); }}
         />
       <View style={styles.header}>
         <IconButton
           style={styles.btFilter}
-          onPress={() => { openPage('filter') }}
+          onPress={() => { }}
           icon={'magnifying-glass'}
           title={'search'}/>
         <IconButton
           style={styles.btShow}
-          onPress={() => { openPage('filter') }}
-          icon={show} />
+          onPress={() => { }}
+          icon={view} />
       </View>
       <Text>{'hola\ngola'}</Text>
     </SafeAreaView>
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: 'blue',
     flexDirection: 'row',
-    padding: 9
+    padding: 8
   },
   btFilter: {
     flexDirection: 'row',

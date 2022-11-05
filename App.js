@@ -30,6 +30,7 @@ import {
 
 import PageLoad from './src/PageLoad';
 import PageHome from './src/PageHome';
+import PageManager from './src/PageManager';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'
@@ -88,6 +89,9 @@ const App = () => {
         <Stack.Screen
           name="PageHome"
           component={PageHome} />
+        <Stack.Screen
+          name="PageManager"
+          component={PageManager} />
       </Stack.Navigator>
     </NavigationContainer>
   );

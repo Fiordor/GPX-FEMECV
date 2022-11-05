@@ -8,15 +8,13 @@ const ToolbarItem = ({ icon = null, text = null, button = null }) => {
   } else if (icon == null && button == null) {
     return <Text>{text}</Text>
   } else {
-    return <IconButton onPress={button} icon={icon} text={text} />;
+    return <IconButton style={styles.button} onPress={button} icon={icon} title={text} />;
   }
 }
 
 const Toolbar = ({
   leftIcon = null, leftText = null, leftButton = null,
   rightIcon = null, rightText = null, rightButton = null }) => {
-
-  
 
   return (
     <View style={styles.toolbar} >
@@ -35,6 +33,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 8,
     zIndex: 1
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center'
   }
 });
 

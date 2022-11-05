@@ -50,7 +50,7 @@ const PageLoad = ({ route, navigation }) => {
       trails[i]['visible'] = true;
     }
 
-    navigation.navigate('PageHome', { trails: trails, show: 'map' });
+    navigation.navigate('PageHome', { trails: trails, view: 'map' });
   }
 
   useEffect(() => {

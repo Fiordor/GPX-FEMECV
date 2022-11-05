@@ -98,12 +98,32 @@ The Home page allways must recive the follow json as params:
 {
     trails: Array,
     filter: trail.town | undefined,
-    filterTrails: //en proceso de estudio,
-    show: 'map' | 'list'
+    view: 'map' | 'list'
 }
 ```
 
 ### Manager page
+Download or update data.Like this is a small project, I do not contemplate that the trails info will be update, just them points. The page has an indicator of queue length and three buttons to change view.
++ Download: list the trails whose points attribute is null, this means that we have not downloaded before the data.
++ Update: list the trails whose points attribute is false or an array, this means that the trail has not points or it has
++ Queue: list the trails to process.
+
+<img src="./doc_img/page_manager.png" height="250" alt="page_manager">
+
+The Manager page allways must recive the follow json as params:
+```
+{
+    trails: Array
+}
+```
+
+<img src="./doc_img/manager_process.png" height="250" alt="manager_process">
+
+To process the trails use the next steps:
+
+With the main trails array, loop all the array and split the data into two types: downloadTrails, the trails whose points attribute is null and we do not know if has data or updateTrails, the trails whose points attribute has information. The data structure is Map (I studied before that object with string index is less efficient than Map object). The key is the town, the value to group the trails, and the value is an array of trails with the same town.
+
+When press download or update item, it pass to disabled and duplicate into queueTrails. One by one, delete if has data on DB and request its points. The save it and update the item. Also must update the main trails. Finally add the item to updateTrails if not exists and delete from downloadTrails if exists.
 
 ### Filter page
 
