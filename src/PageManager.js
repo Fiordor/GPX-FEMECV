@@ -1,33 +1,40 @@
 import { FlashList } from '@shopify/flash-list';
 import React, { useEffect, useState } from 'react';
-import { BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from './components/IconButton';
 import Toolbar from './components/Toolbar';
 
 const DownloadList = ({ hide = false, array, openItem }) => {
 
-  const renderItem = ({ item }) => {
+  const getHeight = () => {
+    //50 toolbar, 60 header, 16 margin, 16 bottom bar, 8 marginbttom
+    return Dimensions.get('window').height - 50 - 60 - 16 - 16 - 8;
+  }
 
+  const renderItem = ({ item }) => {
+    let disabled = item.disabled;
     return (
       <TouchableOpacity
         style={styles.item}
-        //disabled={item.coordenadas == 0}
-        onPress={() => { openItem(item.key); }}>
+        disabled={disabled}
+        onPress={() => { if(!disabled) { console.log('a'); disabled = true}; openItem(item.key); }}>
         <Text>{item.key}</Text>
         <Text>{item.size}</Text>
       </TouchableOpacity>
     );
   }
 
+  
   useEffect(() => {
-    //console.log(array)
+    console.log(array.length)
   }, [array]);
+  
 
-  //if (hide || array == undefined) return null;
+  if (hide || array == undefined) return null;
 
   return (
-    <View style={styles.list}>
+    <View style={[styles.list, { height: getHeight() }]}>
       <FlashList
         data={array}
         renderItem={renderItem}
@@ -47,13 +54,13 @@ const PageManager = ({ route, navigation }) => {
   const mapToArray = (map) => {
     let array = Array.from(map.keys());
     for (let i = 0; i < array.length; i++) {
-      array[i] = { key: array[i], size: map.get(array[i]).length };
+      array[i] = { key: array[i], size: map.get(array[i]).length, disabled: false };
     }
     return array
   }
 
   const addToQueue = (town) => {
-    console.log(town);
+    console.log(town)
   }
 
   useEffect(() => {
@@ -82,12 +89,6 @@ const PageManager = ({ route, navigation }) => {
 
     setDownloadTrails(new Map([...downloadTrails].sort()));
     setUpdateTrails(new Map([...updateTrails].sort()));
-
-    /*
-    mapToArray(orderDownloadTrails).forEach(element => {
-      console.log(element)
-    });
-    */
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       navigation.navigate('PageHome', params);
@@ -120,6 +121,7 @@ const PageManager = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   header: {
+    height: 60,
     backgroundColor: 'blue',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -134,17 +136,19 @@ const styles = StyleSheet.create({
     marginRight: 4,
     flex: 1
   },
-  listContainer: {
-    backgroundColor: '#c073e8',
-    flex: 1
-  },
   list: {
-    flex: 3,
-    backgroundColor: '#006ac7'
+    width: 'auto',
+    height: 10,
+    margin: 8
   },
   item: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    marginBottom: 4,
+    marginTop: 4,
+    backgroundColor: '#e3e3e3'
   },
   btFilter: {
     flexDirection: 'row',
