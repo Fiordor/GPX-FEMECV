@@ -5,6 +5,8 @@ const DOMAIN = 'https://senders.femecv.com/';
 const RESET = 'https://senders.femecv.com/es/senderos/reset';
 const INDEX_LIST = 'https://senders.femecv.com/es/senderos/indexListado/';
 
+// trails ----------------------------------------------------------------------
+
 const isNodeEmpty = (node) => {
   return node.toString().replaceAll(/\s/g, '') == 0;
 }
@@ -81,6 +83,76 @@ const specialChars = (str) => {
   return result.replaceAll(`'`, '');
 }
 
+// points ----------------------------------------------------------------------
+
+const getGPX = async (link) => {
+
+  let response = await fetch(link);
+  let code = parseInt(await response.status);
+
+  if (code != 200) { return null; }
+
+  let text = await response.text();
+  return text;
+}
+
+const getLinkOfGPX = async (link) => {
+
+  //request page
+  let response = await fetch(link);
+  let code = parseInt(await response.status);
+
+  if (code != 200) { return null; }
+
+  let text = await response.text();
+  //console.log('antes de quitar espacios', text.length);
+  text = text.trim().split(/[\s,\t,\n]+/).join(' ');
+  //console.log('despues de quitar espacios', text.length);
+
+  let fin = text.indexOf('Track', text.indexOf('.gpx'));
+  if (fin == -1) { return null; }
+  //console.log('extraer href fin', fin);
+
+  text = text.substring(0, fin);
+  let ini = text.lastIndexOf('<a');
+  //console.log('extraer href ini', ini)
+
+  text = text.substring(ini, text.length);
+
+  text = text.split(' ');
+  text = text.find((str) => str.startsWith('href'));
+
+  let gpxlink = text.substring(6, text.length - 1);
+
+  return gpxlink;
+}
+
+const getPointsFromGPX = (xml) => {
+
+  let parser = new DomParser.DOMParser();
+  let grossXML = parser.parseFromString(xml, 'text/html');
+  let rows = grossXML.getElementsByTagName('trkpt');
+
+  let coordinates = [];
+
+  for (let index = 0; index < rows.length; index++) {
+    const element = rows[index];
+    let lat = parseFloat(element.getAttribute('lat'));
+    let lon = parseFloat(element.getAttribute('lon'));
+
+    let ele = element.getElementsByTagName('ele')[0];
+    ele = parseFloat(ele.childNodes[0].data);
+    let time = element.getElementsByTagName('time')[0];
+    time = time != undefined ? time.childNodes[0].data : '0';
+
+    let c = { lat: lat, lon: lon, ele: ele, time: time };
+    coordinates.push(c);
+  }
+
+  return coordinates;
+}
+
+// public ----------------------------------------------------------------------
 
 const cleanCache = async () => {
 
@@ -96,7 +168,7 @@ const cleanCache = async () => {
   });
 }
 
-const readTrails = async (setInfo = null) => {
+const getTrails = async (setInfo = null) => {
 
   return new Promise(async (resolve, reject) => {
 
@@ -145,12 +217,35 @@ const readTrails = async (setInfo = null) => {
 
 }
 
+const getPoints = async (trail) => {
+  return new Promise(async (resolve, reject) => {
+    
+    let link = await getLinkOfGPX(trail.link);
+
+    if (link == null) {
+      resolve(null);
+    } else {
+
+      try {
+        let gpx = await getGPX(link);
+        if (gpx == null) resolve(null);
+        let points = getPointsFromGPX(gpx);
+        resolve(points);
+      } catch (e) {
+        resolve(null);
+      }
+    }
+  });
+}
+
 
 class Web {
 
   static cleanCache = cleanCache;
 
-  static getTrails = readTrails;
+  static getTrails = getTrails;
+
+  static getPoints = getPoints;
 }
 
 export default Web;

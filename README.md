@@ -125,6 +125,37 @@ With the main trails array, loop all the array and split the data into two types
 
 When press download or update item, it pass into queueTrails. One by one, delete if has data on DB and request its points. Then save it and update the item. Also must update the main trails array. Finally add the item to updateTrails if not exists and delete from downloadTrails if exists.
 
+To display and refresh the lists, either download and update, the data which FlashList read is an array. Also, the data must be an array, for that way the component refresh when the items value changes and the array update. Map structure is the better but need an array which will be update each time, so, what is the best method to pass Map into Array? Map object has its function, also, we can get the Map, parse into array and sort the array:
+
+Map
+```js
+let start = new Date().getTime(), finish = 0;
+new Map([...map].sort());
+finish = new Date().getTime();
+console.log('map', finish - start);
+
+//LOG> map 15
+```
+
+Array
+```js
+let start = new Date().getTime(), finish = 0;
+let array = Array.from(map.keys());
+array.sort();
+for (let i = 0; i < array.length; i++) {
+    array[i] = {
+        key: array[i],
+        size: mapDownloadTrails.get(array[i]).length
+    };
+}
+finish = new Date().getTime();
+console.log('array', finish - start);
+
+//LOG> 1
+```
+
+Not only is faster work with array, but it allow add attributes to work better with the item list. 15 ms against 1 ms of map around 600 elements. This array must update as faster as it can, you think that when click the item, the array have to update, and then update the other maps or array, but the priority is the array whose render.
+
 ### Filter page
 
 ### Trail page

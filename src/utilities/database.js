@@ -60,10 +60,7 @@ const getDatabase = async () => {
 
 const parseSQLResult = (rows) => {
   let array = [];
-  for(let i = 0; i < rows.length; i++) {
-    let item = rows.item(i);
-    array.push(item);
-  }
+  for(let i = 0; i < rows.length; i++) { array.push(rows.item(i)); }
   return array;
 }
 
