@@ -31,12 +31,12 @@ const PageDownload = ({ route, navigation }) => {
       setMsgProcess('Save trails...')
 
       let sql = 'INSERT INTO trails (id, name, link, photo, entity, condition, ';
-      sql +=  'town, distance, time, ascent, descent, points) VALUES';
+      sql +=  'town, distance, time, ascent, descent, pointLat, pointLng, points) VALUES';
       trails.forEach((t, i) => {
         let values = '';
         values += ` (${i + 1}, "${t.name}", "${t.link}", "${t.photo}", "${t.entity}",`;
         values += ` "${t.condition}", "${t.town}", "${t.distance}", "${t.time}",`;
-        values += ` "${t.ascent}", "${t.descent}", NULL),`;
+        values += ` "${t.ascent}", "${t.descent}", NULL, NULL, NULL),`;
         sql += values;
       });
       sql = sql.substring(0, sql.length - 1) + ';';

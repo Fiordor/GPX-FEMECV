@@ -23,6 +23,8 @@ const createTables = async (db) => {
             time VARCHAR(8) NOT NULL,
             ascent VARCHAR(10) NOT NULL,
             descent VARCHAR(10) NOT NULL,
+            pointLat DECIMAL(3,15),
+            pointLng DECIMAL (3,15),
             points INTEGER(1)
           )`, [],
         (sqlTxn, res) => { t1 = true; done(); },

@@ -4,25 +4,25 @@ import DB from "../utilities/Database";
 
 const Load = ({ hide = false, resolve = null }) => {
 
-  const loadTrails = async () => {
+  const getTrails = async () => {
 
     let trails = [];
 
     await DB.open();
-    trails = await DB.exec('SELECT * FROM trails');
-
-    for (let i = 0; i < trails.length; i++) {
-      if (trails[i].points == 1) {
-        trails[i].points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [trails[i].id]);
-      }
-    }
+    let sql = 'SELECT id, name, condition, town, distance, time, ascent, descent, pointLan, pointLng, points FROM trails';
+    trails = await DB.exec(sql);
 
     if (resolve != null) resolve(trails);
   }
 
+  const getPointsByTrailId = async (id) => {
+    let points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [id]);
+    if (resolve != null) resolve(points);
+  }
+
 
   useEffect(() => {
-    loadTrails();
+    getTrails();
   }, []);
 
 

@@ -13,7 +13,7 @@ React Native project. Use local storage with SQLite, Leaflet as map library, ren
 ### Screens and navigation
 <img src="./doc_img/screens_navigation.png" height="250" alt="screens_navigation">
 
-1. To initialize the app, first load every trail and formated to array that app will work properly. If not exists the trails, must download from the website.
+1. To initialize the app, first check if exists the trails, if not it must download from the website.
 
 2. Home page contains a list of trails where you can click and open or a map with each trail where you can click either. Also has two functions, navigate to open the filters and pick quickly or navigate to download or update the trails of each town.
     + Manager page has two list, one with trails to download and one with trils already download but update.
