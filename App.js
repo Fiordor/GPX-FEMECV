@@ -28,7 +28,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import PageLoad from './src/PageLoad';
+import PageDownload from './src/PageDownload';
 import PageHome from './src/PageHome';
 import PageManager from './src/PageManager';
 
@@ -84,8 +84,8 @@ const App = () => {
       <Stack.Navigator initialRouteName='Trails'
         screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name='PageLoad'
-          component={PageLoad} />
+          name='PageDownload'
+          component={PageDownload} />
         <Stack.Screen
           name="PageHome"
           component={PageHome} />

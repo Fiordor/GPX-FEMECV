@@ -5,17 +5,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DB from './utilities/Database';
 import Web from './utilities/Web';
 
-const PageLoad = ({ route, navigation }) => {
+const PageDownload = ({ route, navigation }) => {
 
   const [msgProcess, setMsgProcess] = useState('');
 
-  const loadTrails = async () => {
+  const downloadTrails = async () => {
 
     let trails = [];
 
     try {
       await DB.open();
-      trails = await DB.exec('SELECT * FROM trails ORDER BY name');
+      trails = await DB.exec('SELECT * FROM trails');
     } catch (e) {
       console.error(e);
       return;
@@ -43,19 +43,22 @@ const PageLoad = ({ route, navigation }) => {
       await DB.exec(sql);
     }
 
+    /*
     setMsgProcess('Load trails...')
-    trails = await DB.exec('SELECT * FROM trails ORDER BY name');
+    trails = await DB.exec('SELECT * FROM trails ORDER BY id');
 
     for (let i = 0; i < trails.length; i++) {
-      trails[i]['visible'] = true;
+      if (trails[i].points == 1) {
+        trails[i].points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [trails[i].id]);
+      }
     }
+    */
 
-    navigation.navigate('PageHome', { trails: trails, view: 'map' });
+    navigation.navigate('PageHome');
   }
 
   useEffect(() => {
-
-    loadTrails();
+    downloadTrails();
   }, []);
 
   return (
@@ -77,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PageLoad;
+export default PageDownload;

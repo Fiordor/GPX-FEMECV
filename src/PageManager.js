@@ -15,14 +15,6 @@ const DownloadList = ({ hide = false, array, openItem = null, disabledItem = fal
     return Dimensions.get('window').height - 50 - 60 - 16 - 16 - 8;
   }
 
-  const points = (trails) => {
-    let str = '';
-    trails.forEach(t => {
-      str += ' ' + (t.points != null && t.points != false ? t.points.length : t.points);
-    });
-    return str;
-  }
-
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
@@ -31,7 +23,6 @@ const DownloadList = ({ hide = false, array, openItem = null, disabledItem = fal
         onPress={() => { if (openItem != null) openItem(index, item); }}>
         <Text>{item.key}</Text>
         <Text>{item.value.length}</Text>
-        <Text>{points(item.value)}</Text>
       </TouchableOpacity>
     );
   }
@@ -59,8 +50,6 @@ const DownloadList = ({ hide = false, array, openItem = null, disabledItem = fal
 const PageManager = ({ route, navigation }) => {
 
   const [params, setParams] = useState({ trails: [], filter: null, view: 'map' });
-  const [mapDownloadTrails, setMapDownloadTrails] = useState(new Map());
-  const [mapUpdateTrails, setMapUpdateTrails] = useState(new Map());
   const [downloadTrails, setDownloadTrails] = useState([]);
   const [updateTrails, setUpdateTrails] = useState([]);
   const [queueTrails, setQueueTrails] = useState([]);
@@ -74,7 +63,6 @@ const PageManager = ({ route, navigation }) => {
     setDownloadTrails([...downloadTrails]);
 
     queueTrails.push({ key: item.key, value: item.value });
-    mapDownloadTrails.delete(item.key);
 
     if (!isUpdating && queueTrails.length) {
       setIsUpdating(true);
@@ -97,7 +85,7 @@ const PageManager = ({ route, navigation }) => {
   }
 
   const getPoints = async () => {
-    while(queueTrails.length) {
+    while (queueTrails.length) {
       let item = queueTrails[0];
 
       for (let i = 0; i < item.value.length; i++) {
@@ -105,12 +93,12 @@ const PageManager = ({ route, navigation }) => {
 
         await DB.exec('DELETE FROM points WHERE trail = ?', [trail.id]);
         await Web.cleanCache();
-        
+
         let points = await Web.getPoints(trail);
         if (points == null) {
 
           await DB.exec('UPDATE trails SET points = 0 WHERE id = ?', [trail.id]);
-          points = 0;
+          item.value[i].points = 0;
 
         } else {
 
@@ -130,7 +118,7 @@ const PageManager = ({ route, navigation }) => {
           });
           sql = sql.substring(0, sql.length - 1) + ';';
           await DB.exec(sql);
-          
+
           points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [trail.id]);
           await DB.exec('UPDATE trails SET points = 1 WHERE id = ?', [trail.id]);
 
@@ -143,15 +131,38 @@ const PageManager = ({ route, navigation }) => {
       queueTrails.shift();
       setQueueTrails([...queueTrails]);
 
-      updateTrails.push(item);
-      setUpdateTrails([...updateTrails]);
+      let index = sortedIndex(updateTrails, item);
+      let update = updateTrails;
+      
+      let s = new Date().getTime();
+      let start = update.slice(0, index);
+      let end  = update.slice(index);
+      update = ( start.concat([item]) ).concat(end);
+      let f = new Date().getTime();
+      console.log('insert', f - s, item.key);
+
+      setUpdateTrails([...update]);
     }
     setIsUpdating(false);
+  }
+
+  const sortedIndex = (array, value) => {
+    let low = 0, high = array.length;
+
+    while (low < high) {
+      let mid = low + high >>> 1;
+      if (array[mid].key < value.key) low = mid + 1;
+      else high = mid;
+    }
+    return low;
   }
 
   useEffect(() => {
 
     setParams(route.params);
+
+    let mapDownloadTrails = new Map();
+    let mapUpdateTrails = new Map();
 
     route.params.trails.forEach(trail => {
       if (trail.points == null) {
@@ -173,7 +184,7 @@ const PageManager = ({ route, navigation }) => {
     });
 
     setDownloadTrails(mapToArray(mapDownloadTrails));
-    setUpdateTrails(mapToArray(updateTrails));
+    setUpdateTrails(mapToArray(mapUpdateTrails));
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       navigation.navigate('PageHome', params);
@@ -193,14 +204,17 @@ const PageManager = ({ route, navigation }) => {
       <View style={styles.header}>
         <IconButton
           style={styles.btHeader}
+          disabled={ view == 'download' }
           onPress={() => { chageView('download') }}
           title={`Download (${downloadTrails.length})`} />
         <IconButton
           style={styles.btHeader}
+          disabled={ view == 'update' }
           onPress={() => { chageView('update') }}
           title={`Update (${updateTrails.length})`} />
         <IconButton
           style={styles.btHeader}
+          disabled={ view == 'queue' }
           onPress={() => { chageView('queue') }}
           title={`Queue (${queueTrails.length})`} />
       </View>

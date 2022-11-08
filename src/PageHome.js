@@ -2,21 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { BackHandler, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from './components/IconButton';
+import Load from './components/Load';
 import Toolbar from './components/Toolbar';
 
 const PageHome = ({ route, navigation }) => {
 
+  const [params, setParams] = useState({ filter: null, view: 'map' });
   const [trails, setTrails] = useState([]);
-  const [view, setView] = useState('map');
 
   const openPageManager = () => {
-    navigation.navigate('PageManager', { trails: trails });
+    navigation.navigate('PageManager', params);
+  }
+
+  const loadDone = (t) => {
+    setTrails(t);
+    console.log('done')
   }
 
   useEffect(() => {
 
-    setTrails(route.params.trails);
-    setView(route.params.view);
+    if (route.params != undefined) {
+      setParams(route.params);
+    }
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       console.log('back');
@@ -27,7 +34,7 @@ const PageHome = ({ route, navigation }) => {
   }, [route.params]);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.fullscreen}>
       <Toolbar
         leftText={'GPX'}
         rightIcon={'rotate'}
@@ -42,14 +49,22 @@ const PageHome = ({ route, navigation }) => {
         <IconButton
           style={styles.btShow}
           onPress={() => { }}
-          icon={view} />
+          icon={params.view} />
       </View>
-      <Text>{'hola\ngola'}</Text>
+      <View style={styles.maxDim}>
+        <Load
+          resolve={loadDone}
+          />
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  fullscreen: {
+    flex: 1,
+    flexDirection: 'column'
+  },
   toolbar: {
     height: 50,
     backgroundColor: 'red',
@@ -78,6 +93,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  maxDim: {
+    backgroundColor: '#f7d3d3',
+    flex: 1
   }
 });
 
