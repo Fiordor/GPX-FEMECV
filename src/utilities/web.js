@@ -217,17 +217,17 @@ const getTrails = async (setInfo = null) => {
 
 }
 
-const getPoints = async (trail) => {
+const getPoints = async (link) => {
   return new Promise(async (resolve, reject) => {
     
-    let link = await getLinkOfGPX(trail.link);
+    let linkOfGPX = await getLinkOfGPX(link);
 
-    if (link == null) {
+    if (linkOfGPX == null) {
       resolve(null);
     } else {
 
       try {
-        let gpx = await getGPX(link);
+        let gpx = await getGPX(linkOfGPX);
         if (gpx == null) resolve(null);
         let points = getPointsFromGPX(gpx);
         resolve(points);
