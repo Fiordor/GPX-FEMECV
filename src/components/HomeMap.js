@@ -46,6 +46,7 @@ const HomeMap = ({ hide = false, mapMarkers = [], mapCenterPosition = null, open
           onMessageReceived={onMessageReceived}
           mapMarkers={mapMarkers}
           mapCenterPosition={mapCenterPosition}
+          zoom={6}
           doDebug={false}
         />
         <IconButton

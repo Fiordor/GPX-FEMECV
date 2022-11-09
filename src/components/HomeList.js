@@ -17,14 +17,26 @@ const HomeList = ({ hide = false, trails = [], openItem = null }) => {
         <Text style={styles.itemName}>{item.name}</Text>
         <Text>{item.condition}</Text>
         <Text>{item.town}</Text>
-        <Text style={styles.itemDetails}>
-          <FontAwesomeIcon icon={['fas', 'stopwatch']} size={12} />&nbsp;
-          {item.time.length ? item.time : '--:--:--'}&nbsp;
-          <FontAwesomeIcon icon={['fas', 'arrow-trend-up']} size={12} />&nbsp;
-          {item.ascent.length ? item.ascent : '-- m'}&nbsp;
-          <FontAwesomeIcon icon={['fas', 'arrow-trend-down']} size={12} />&nbsp;
-          {item.descent.length ? item.descent : '-- m'}
-        </Text>
+        <View style={styles.rowDetails}>
+          <Text style={styles.itemDetails}>
+            <FontAwesomeIcon icon={['fas', 'stopwatch']} size={12} />
+          </Text>
+          <Text style={styles.itemDetails}>
+            {item.time.length ? item.time : '--:--:--'}
+          </Text>
+          <Text style={styles.itemDetails}>
+            <FontAwesomeIcon icon={['fas', 'arrow-trend-up']} size={12} />
+          </Text>
+          <Text style={styles.itemDetails}>
+            {item.ascent.length ? item.ascent : '-- m'}
+          </Text>
+          <Text style={styles.itemDetails}>
+            <FontAwesomeIcon icon={['fas', 'arrow-trend-down']} size={12} />
+          </Text>
+          <Text style={styles.itemDetails}>
+            {item.descent.length ? item.descent : '-- m'}
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -88,8 +100,13 @@ const styles = StyleSheet.create({
   itemName: {
     fontWeight: 'bold'
   },
+  rowDetails: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   itemDetails: {
-    fontSize: 14
+    fontSize: 14,
+    marginRight: 8
   }
 });
 

@@ -34,6 +34,7 @@ import PageManager from './src/PageManager';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import PageFilter from './src/PageFilter';
 
 library.add(fas);
 
@@ -92,6 +93,9 @@ const App = () => {
         <Stack.Screen
           name="PageManager"
           component={PageManager} />
+        <Stack.Screen
+          name="PageFilter"
+          component={PageFilter} />
       </Stack.Navigator>
     </NavigationContainer>
   );

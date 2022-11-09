@@ -20,7 +20,12 @@ const PageHome = ({ route, navigation }) => {
     navigation.navigate('PageManager', params);
   }
 
+  const openPageFilter = () => {
+    navigation.navigate('PageFilter', params);
+  }
+
   const loadDone = (t) => {
+
     setTrails(t);
 
     let marks = [];
@@ -57,13 +62,20 @@ const PageHome = ({ route, navigation }) => {
 
     if (center.latMax != null) {
       setMapCenterPosition({
-        lat: ( (center.latMax + center.latMin) / 2 ),
-        lng: ( (center.lngMax + center.lngMin) / 2 )
+        lat: ((center.latMax + center.latMin) / 2),
+        lng: ((center.lngMax + center.lngMin) / 2)
       });
     }
 
     setMapMarkers(marks);
     setLoad('done');
+  }
+
+  const clearFilter = () => {
+    if (params.filter != null) {
+      setParams({ filter: null, view: params.view });
+      setLoad('getTrails');
+    }
   }
 
   const changeView = () => {
@@ -78,6 +90,7 @@ const PageHome = ({ route, navigation }) => {
 
     if (route.params != undefined) {
       setParams(route.params);
+      setLoad('getTrails');
     }
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -98,17 +111,25 @@ const PageHome = ({ route, navigation }) => {
       <View style={styles.header}>
         <IconButton
           style={styles.btFilter}
-          onPress={() => { }}
+          onPress={() => { openPageFilter(); }}
           icon={'magnifying-glass'}
-          title={'search'} />
+          title={params.filter == null ? 'search' : params.filter} />
+        <IconButton
+          style={styles.btView}
+          disabled={params.filter == null}
+          onPress={() => { clearFilter(); }}
+          icon={'trash'}
+          size={20} />
         <IconButton
           style={styles.btView}
           onPress={() => { changeView(); }}
-          icon={params.view} />
+          icon={params.view}
+          size={20} />
       </View>
       <View style={styles.maxDim}>
         <Load
           load={load}
+          input={params.filter}
           resolve={loadDone} />
         <HomeMap
           hide={params.view != 'map' || load != 'done'}
@@ -147,7 +168,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'green'
+    backgroundColor: 'green',
+    padding: 8
   },
   btView: {
     marginLeft: 8,
