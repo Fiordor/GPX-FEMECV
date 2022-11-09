@@ -2,13 +2,22 @@ import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import DB from "../utilities/Database";
 
-const Load = ({ hide = false, resolve = null }) => {
+const Load = ({ load, resolve }) => {
 
   const getTrails = async () => {
 
     await DB.open();
-    let sql = 'SELECT id, name, condition, town, distance, time, ascent, descent, pointLan, pointLng, points FROM trails';
+    let sql = 'SELECT id, name, condition, town, distance, time, ascent, descent, pointLat, pointLng, points FROM trails ORDER BY name';
     let trails = await DB.exec(sql);
+    if (resolve != null) resolve(trails);
+  }
+
+  const getTrailsMin = async () => {
+
+    await DB.open();
+    let sql = 'SELECT id, link, town, points FROM trails';
+    trails = await DB.exec(sql);
+
     if (resolve != null) resolve(trails);
   }
 
@@ -19,27 +28,35 @@ const Load = ({ hide = false, resolve = null }) => {
     if (resolve != null) resolve(points);
   }
 
-  const getTownsWithTrails = async () => {
+  const getTowns = async () => {
 
     await DB.open();
-    let sql = 'SELECT id, link, town, points FROM trails';
+    let sql = 'SELECT DISCTINC(town) AS town FROM trails';
     trails = await DB.exec(sql);
     if (resolve != null) resolve(trails);
   }
 
 
   useEffect(() => {
-    getTrails();
+
+    switch (load) {
+      case 'getTrails' : getTrails(); break;
+      case 'getTrailsMin' : getTrailsMin(); break;
+      case 'getPointsByTrailId' : getPointsByTrailId(); break;
+      case 'getTowns' : getTowns(); break;
+    }
+
   }, []);
 
-
-  if (hide) return null;
-
-  return (
-    <View style={styles.fullscreen}>
-      <ActivityIndicator size={64} />
-    </View>
-  );
+  if (load == 'done') {
+    return null;
+  } else {
+    return (
+      <View style={styles.fullscreen}>
+        <ActivityIndicator size={64} />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

@@ -3,17 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { BackHandler, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from './components/IconButton';
+import Load from './components/Load';
 import Toolbar from './components/Toolbar';
 
 import DB from './utilities/Database';
 import Web from './utilities/Web';
 
 const DownloadList = ({ hide = false, array, openItem = null, disabledItem = false }) => {
-
-  const getHeight = () => {
-    //50 toolbar, 60 header, 16 margin, 16 bottom bar, 8 marginbttom
-    return Dimensions.get('window').height - 50 - 60 - 16 - 16 - 8;
-  }
 
   const renderItem = ({ item, index }) => {
     return (
@@ -31,17 +27,19 @@ const DownloadList = ({ hide = false, array, openItem = null, disabledItem = fal
     return null;
   } else if (array == undefined || array.length == 0) {
     return (
-      <View style={[styles.listEmpty, { height: getHeight() }]}>
+      <View style={styles.fullscreenCenter}>
         <Text>Without trails</Text>
       </View>
     );
   } else {
     return (
-      <View style={[styles.list, { height: getHeight() }]}>
-        <FlashList
-          data={array}
-          renderItem={renderItem}
-          estimatedItemSize={50} />
+      <View style={styles.fullscreen}>
+        <View style={styles.fullscreenAbs}>
+          <FlashList
+            data={array}
+            renderItem={renderItem}
+            estimatedItemSize={50} />
+        </View>
       </View>
     );
   }
@@ -49,7 +47,9 @@ const DownloadList = ({ hide = false, array, openItem = null, disabledItem = fal
 
 const PageManager = ({ route, navigation }) => {
 
-  const [params, setParams] = useState({ trails: [], filter: null, view: 'map' });
+  const [params, setParams] = useState({ filter: null, view: 'map' });
+  const [load, setLoad] = useState('getTrailsMin')
+
   const [downloadTrails, setDownloadTrails] = useState([]);
   const [updateTrails, setUpdateTrails] = useState([]);
   const [queueTrails, setQueueTrails] = useState([]);
@@ -70,7 +70,39 @@ const PageManager = ({ route, navigation }) => {
     }
   }
 
-  const chageView = (v) => { setView(v); }
+  const chageView = (v) => {
+    setView(v);
+  }
+
+  const loadDone = (t) => {
+
+    setLoad('done');
+
+    let mapDownloadTrails = new Map();
+    let mapUpdateTrails = new Map();
+
+    t.forEach(trail => {
+      if (trail.points == null) {
+
+        if (mapDownloadTrails.has(trail.town)) {
+          mapDownloadTrails.get(trail.town).push(trail);
+        } else {
+          mapDownloadTrails.set(trail.town, [trail]);
+        }
+
+      } else {
+
+        if (mapUpdateTrails.has(trail.town)) {
+          mapUpdateTrails.get(trail.town).push(trail);
+        } else {
+          mapUpdateTrails.set(trail.town, [trail]);
+        }
+      }
+    });
+
+    setDownloadTrails(mapToArray(mapDownloadTrails));
+    setUpdateTrails(mapToArray(mapUpdateTrails));
+  }
 
   const mapToArray = (map) => {
     let array = Array.from(map.keys());
@@ -92,12 +124,13 @@ const PageManager = ({ route, navigation }) => {
         let trail = item.value[i];
 
         await DB.exec('DELETE FROM points WHERE trail = ?', [trail.id]);
+        await DB.exec('UPDATE trails SET pointLat = NULL, pointLng = NULL, points = NULL WHERE id = ?', [trail.id]);
         await Web.cleanCache();
 
-        let points = await Web.getPoints(trail);
+        let points = await Web.getPoints(trail.link);
         if (points == null) {
 
-          await DB.exec('UPDATE trails SET points = 0 WHERE id = ?', [trail.id]);
+          await DB.exec('UPDATE trails SET pointLat = NULL, pointLng = NULL, points = 0 WHERE id = ?', [trail.id]);
           item.value[i].points = 0;
 
         } else {
@@ -120,12 +153,13 @@ const PageManager = ({ route, navigation }) => {
           await DB.exec(sql);
 
           points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [trail.id]);
-          await DB.exec('UPDATE trails SET points = 1 WHERE id = ?', [trail.id]);
+          await DB.exec(
+            'UPDATE trails SET pointLat = ?, pointLng = ?, points = 1 WHERE id = ?',
+            [ points[0].lat, points[0].lng, trail.id]);
 
         }
 
         item.value[i].points = points;
-        params.trails[trail.id - 1].points = points;
       }
 
       queueTrails.shift();
@@ -133,13 +167,9 @@ const PageManager = ({ route, navigation }) => {
 
       let index = sortedIndex(updateTrails, item);
       let update = updateTrails;
-      
-      let s = new Date().getTime();
       let start = update.slice(0, index);
-      let end  = update.slice(index);
-      update = ( start.concat([item]) ).concat(end);
-      let f = new Date().getTime();
-      console.log('insert', f - s, item.key);
+      let end = update.slice(index);
+      update = (start.concat([item])).concat(end);
 
       setUpdateTrails([...update]);
     }
@@ -161,31 +191,6 @@ const PageManager = ({ route, navigation }) => {
 
     setParams(route.params);
 
-    let mapDownloadTrails = new Map();
-    let mapUpdateTrails = new Map();
-
-    route.params.trails.forEach(trail => {
-      if (trail.points == null) {
-
-        if (mapDownloadTrails.has(trail.town)) {
-          mapDownloadTrails.get(trail.town).push(trail);
-        } else {
-          mapDownloadTrails.set(trail.town, [trail]);
-        }
-
-      } else {
-
-        if (mapUpdateTrails.has(trail.town)) {
-          mapUpdateTrails.get(trail.town).push(trail);
-        } else {
-          mapUpdateTrails.set(trail.town, [trail]);
-        }
-      }
-    });
-
-    setDownloadTrails(mapToArray(mapDownloadTrails));
-    setUpdateTrails(mapToArray(mapUpdateTrails));
-
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       navigation.navigate('PageHome', params);
       return true;
@@ -195,7 +200,7 @@ const PageManager = ({ route, navigation }) => {
   }, [route.params]);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.fullscreen}>
       <Toolbar
         leftIcon={'arrow-left'}
         leftText={'Manager'}
@@ -204,20 +209,23 @@ const PageManager = ({ route, navigation }) => {
       <View style={styles.header}>
         <IconButton
           style={styles.btHeader}
-          disabled={ view == 'download' }
+          disabled={view == 'download'}
           onPress={() => { chageView('download') }}
           title={`Download (${downloadTrails.length})`} />
         <IconButton
           style={styles.btHeader}
-          disabled={ view == 'update' }
+          disabled={view == 'update'}
           onPress={() => { chageView('update') }}
           title={`Update (${updateTrails.length})`} />
         <IconButton
           style={styles.btHeader}
-          disabled={ view == 'queue' }
+          disabled={view == 'queue'}
           onPress={() => { chageView('queue') }}
           title={`Queue (${queueTrails.length})`} />
       </View>
+      <Load
+        load={load}
+        resolve={loadDone} />
       <DownloadList
         hide={view != 'download'}
         array={downloadTrails}
@@ -238,6 +246,24 @@ const PageManager = ({ route, navigation }) => {
 }
 
 const styles = StyleSheet.create({
+  fullscreen: {
+    flex: 1,
+    flexDirection: 'column',
+    position: 'relative'
+  },
+  fullscreenAbs: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%'
+  },
+  fullscreenCenter: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   header: {
     height: 60,
     backgroundColor: 'blue',
@@ -254,27 +280,16 @@ const styles = StyleSheet.create({
     marginRight: 4,
     flex: 1
   },
-  list: {
-    width: 'auto',
-    height: 10,
-    margin: 8
-  },
-  listEmpty: {
-    width: 'auto',
-    height: 10,
-    margin: 8,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   item: {
     height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    marginBottom: 4,
     marginTop: 4,
+    marginBottom: 4,
+    marginLeft: 8,
+    marginRight: 8,
     backgroundColor: '#e3e3e3'
   },
   btFilter: {
