@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
-const IconButton = ({hide=false, disabled = false, onPress, title=null, icon=null, style = null, size=14}) => {
+const IconButton = ({hide=false, disabled = false, onPress, color='#000', title=null, icon=null, style = null, size=14}) => {
 
   if (hide) return null;
 
@@ -11,9 +11,22 @@ const IconButton = ({hide=false, disabled = false, onPress, title=null, icon=nul
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      style={style}>
-      {icon != null && <FontAwesomeIcon icon={['fas', icon]} size={size}/>}
-      {title != null && <Text style={ title != null && icon != null ? styles.margin : null } >{title}</Text>}
+      style={ disabled ? [style, {opacity: 0.5}] : style}>
+      { icon != null &&
+        <FontAwesomeIcon
+          icon={['fas', icon]}
+          size={size}
+          color={color} />
+      }
+      { title != null &&
+        <Text
+          style={ title != null && icon != null
+            ? [styles.margin, {color: color}, {fontSize: size}]
+            : [{color: color}, {fontSize: size}]
+          } >
+            {title}
+        </Text>
+      }
     </TouchableOpacity>
   );
 }

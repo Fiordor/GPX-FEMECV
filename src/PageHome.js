@@ -24,6 +24,15 @@ const PageHome = ({ route, navigation }) => {
     navigation.navigate('PageFilter', params);
   }
 
+  const openPageMap = (id) => {
+    let p = {
+      filter: params.filter,
+      view: params.view,
+      id: id
+    }
+    navigation.navigate('PageMap', p);
+  }
+
   const loadDone = (t) => {
 
     setTrails(t);
@@ -82,10 +91,6 @@ const PageHome = ({ route, navigation }) => {
     setParams({ filter: params.filter, view: params.view == 'map' ? 'list' : 'map' });
   }
 
-  const open = (id) => {
-    console.log(id);
-  }
-
   useEffect(() => {
 
     if (route.params != undefined) {
@@ -111,22 +116,26 @@ const PageHome = ({ route, navigation }) => {
       <View style={styles.header}>
         <IconButton
           style={styles.btFilter}
+          color={'#fefefe'}
           onPress={() => { openPageFilter(); }}
           icon={'magnifying-glass'}
-          title={params.filter == null ? 'search' : params.filter} />
+          title={params.filter == null ? 'search' : params.filter}
+          size={20} />
         <IconButton
-          style={styles.btView}
+          style={styles.btClear}
+          color={'#50723c'}
           disabled={params.filter == null}
           onPress={() => { clearFilter(); }}
           icon={'trash'}
           size={20} />
         <IconButton
           style={styles.btView}
+          color={'#fefefe'}
           onPress={() => { changeView(); }}
           icon={params.view}
           size={20} />
       </View>
-      <View style={styles.maxDim}>
+      <View style={styles.fullscreen}>
         <Load
           load={load}
           input={params.filter}
@@ -135,11 +144,11 @@ const PageHome = ({ route, navigation }) => {
           hide={params.view != 'map' || load != 'done'}
           mapMarkers={mapMarkers}
           mapCenterPosition={mapCenterPosition}
-          openItem={open} />
+          openItem={openPageMap} />
         <HomeList
           hide={params.view != 'list' || load != 'done'}
           trails={trails}
-          openItem={open} />
+          openItem={openPageMap} />
       </View>
     </SafeAreaView>
   );
@@ -148,7 +157,8 @@ const PageHome = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   fullscreen: {
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    backgroundColor: '#FEFEFE'
   },
   toolbar: {
     height: 50,
@@ -160,7 +170,6 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   header: {
-    backgroundColor: 'blue',
     flexDirection: 'row',
     padding: 8
   },
@@ -168,21 +177,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'green',
-    padding: 8
+    backgroundColor: '#50723c',
+    padding: 8,
+    borderRadius: 8
   },
-  btView: {
+  btClear: {
     marginLeft: 8,
-    backgroundColor: 'white',
+    backgroundColor: '#adeee3',
     height: 50,
     width: 50,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderRadius: 8
   },
-  maxDim: {
-    backgroundColor: '#f7d3d3',
-    flex: 1
+  btView: {
+    marginLeft: 8,
+    backgroundColor: '#50723c',
+    height: 50,
+    width: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8
   }
 });
 

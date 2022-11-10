@@ -15,8 +15,8 @@ const HomeList = ({ hide = false, trails = [], openItem = null }) => {
         disabled={item.poins == 0}
         onPress={() => { if (openItem != null) openItem(item.id); }}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text>{item.condition}</Text>
-        <Text>{item.town}</Text>
+        <Text style={styles.itemDetails}>{item.condition}</Text>
+        <Text style={styles.itemDetails}>{item.town}</Text>
         <View style={styles.rowDetails}>
           <Text style={styles.itemDetails}>
             <FontAwesomeIcon icon={['fas', 'stopwatch']} size={12} />
@@ -35,6 +35,12 @@ const HomeList = ({ hide = false, trails = [], openItem = null }) => {
           </Text>
           <Text style={styles.itemDetails}>
             {item.descent.length ? item.descent : '-- m'}
+          </Text>
+          <Text style={styles.itemDetails}>
+            <FontAwesomeIcon icon={['fas', 'arrows-left-right-to-line']} size={12} />
+          </Text>
+          <Text style={styles.itemDetails}>
+            {item.distance.length ? item.distance : '-- km'}
           </Text>
         </View>
       </TouchableOpacity>
@@ -68,7 +74,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
     position: 'relative'
   },
   fullscreenAbs: {
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
     padding: 4,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EFEFEF',
     borderRadius: 4
   },
   itemDisabled: {
@@ -93,12 +98,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
     padding: 4,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EFEFEF',
     borderRadius: 4,
     opacity: 0.5
   },
   itemName: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: '#333333'
   },
   rowDetails: {
     flexDirection: 'row',
@@ -106,7 +112,8 @@ const styles = StyleSheet.create({
   },
   itemDetails: {
     fontSize: 14,
-    marginRight: 8
+    marginRight: 8,
+    color: '#333333'
   }
 });
 

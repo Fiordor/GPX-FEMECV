@@ -31,10 +31,12 @@ import {
 import PageDownload from './src/PageDownload';
 import PageHome from './src/PageHome';
 import PageManager from './src/PageManager';
+import PageFilter from './src/PageFilter';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'
-import PageFilter from './src/PageFilter';
+import PageMap from './src/PageMap';
+
 
 library.add(fas);
 
@@ -96,6 +98,9 @@ const App = () => {
         <Stack.Screen
           name="PageFilter"
           component={PageFilter} />
+        <Stack.Screen
+          name="PageMap"
+          component={PageMap} />
       </Stack.Navigator>
     </NavigationContainer>
   );

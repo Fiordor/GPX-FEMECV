@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import DB from "../utilities/Database";
 
-const Load = ({ load, input = null, resolve }) => {
+const Load = ({ load, input = null, resolve = null }) => {
 
   const getTrails = async () => {
 
@@ -30,10 +30,10 @@ const Load = ({ load, input = null, resolve }) => {
     if (resolve != null) resolve(trails);
   }
 
-  const getPointsByTrailId = async (id) => {
+  const getPointsByTrailId = async () => {
 
     await DB.open();
-    let points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [id]);
+    let points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [input]);
     if (resolve != null) resolve(points);
   }
 
@@ -48,14 +48,17 @@ const Load = ({ load, input = null, resolve }) => {
 
   useEffect(() => {
 
-    switch (load) {
-      case 'getTrails' : getTrails(); break;
-      case 'getTrailsMin' : getTrailsMin(); break;
-      case 'getPointsByTrailId' : getPointsByTrailId(); break;
-      case 'getTowns' : getTowns(); break;
+    if (resolve != null) {
+      switch (load) {
+        case 'getTrails' : getTrails(); break;
+        case 'getTrailsMin' : getTrailsMin(); break;
+        case 'getPointsByTrailId' : getPointsByTrailId(); break;
+        case 'hasPointsByTrailId' : hasPointsByTrailId(); break;
+        case 'getTowns' : getTowns(); break;
+      }
     }
 
-  }, [load, input]);
+  }, [load]);
 
   if (load == 'done') {
     return null;

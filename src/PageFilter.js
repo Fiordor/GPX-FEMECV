@@ -17,7 +17,7 @@ const FilterAlphabet = ({ pick = null }) => {
         style={styles.btHeader}
         key={a}
         onPress={() => { if (pick != null) pick(a); }}>
-        <Text style={{ textAlign: 'center' }} >{a}</Text>
+        <Text style={{ textAlign: 'center', color: '#FEFEFE' }} >{a}</Text>
       </TouchableOpacity>
     );
   });
@@ -37,7 +37,7 @@ const FilterList = ({ hide = false, array, openItem = null }) => {
       <TouchableOpacity
         style={styles.item}
         onPress={() => { if (openItem != null) openItem(item); }}>
-        <Text>{item}</Text>
+        <Text style={{color: '#333333'}}>{item}</Text>
       </TouchableOpacity>
     );
   }
@@ -141,7 +141,8 @@ const PageFilter = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   fullscreen: {
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    backgroundColor: '#FEFEFE'
   },
   toolbar: {
     height: 50,
@@ -153,7 +154,6 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   header: {
-    backgroundColor: 'blue',
     flexDirection: 'row',
     width: '100%',
     flexWrap: 'wrap',
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     paddingRight: 6
   },
   btHeader: {
-    backgroundColor: '#e3e3e3',
+    backgroundColor: '#50723c',
     margin: 2,
     paddingTop: 4,
     paddingBottom: 4,
@@ -176,7 +176,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
     position: 'relative'
   },
   listFullscreenAbs: {
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginLeft: 8,
     marginRight: 8,
-    backgroundColor: '#e3e3e3'
+    backgroundColor: '#EFEFEF'
   },
 });
 

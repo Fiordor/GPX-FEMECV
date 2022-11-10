@@ -50,10 +50,11 @@ const HomeMap = ({ hide = false, mapMarkers = [], mapCenterPosition = null, open
           doDebug={false}
         />
         <IconButton
-          style={[styles.floatButton, {left: dim}]}
+          style={ id == 0 ? {opacity: 0} : [styles.floatButton, {left: dim}]}
           disabled={id == 0}
           onPress={open}
           title={title}
+          color={'#FEFEFE'}
         />
       </View>
     );
@@ -66,11 +67,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-    backgroundColor: '#BBBBBB',
+    position: 'relative'
   },
   floatButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(80, 114, 60, 0.8)',
     borderRadius: 8,
     position: 'absolute',
     padding: 8,

@@ -6,9 +6,9 @@ const ToolbarItem = ({ icon = null, text = null, button = null }) => {
   if (icon == null && text == null) {
     return null;
   } else if (icon == null && button == null) {
-    return <Text>{text}</Text>
+    return <Text style={styles.label}>{text}</Text>
   } else {
-    return <IconButton style={styles.button} onPress={button} icon={icon} title={text} />;
+    return <IconButton style={styles.button} onPress={button} color={'#fefefe'} icon={icon} title={text} size={20} />;
   }
 }
 
@@ -27,7 +27,7 @@ const Toolbar = ({
 const styles = StyleSheet.create({
   toolbar: {
     height: 50,
-    backgroundColor: 'red',
+    backgroundColor: '#50723c',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -37,6 +37,10 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  label: {
+    fontSize: 18,
+    color: '#fefefe'
   }
 });
 

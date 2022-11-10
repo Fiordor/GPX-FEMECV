@@ -17,8 +17,8 @@ const DownloadList = ({ hide = false, array, openItem = null, disabledItem = fal
         style={styles.item}
         disabled={disabledItem}
         onPress={() => { if (openItem != null) openItem(index, item); }}>
-        <Text>{item.key}</Text>
-        <Text>{item.value.length}</Text>
+        <Text style={{color: '#333333'}}>{item.key}</Text>
+        <Text style={{color: '#333333'}}>{item.value.length}</Text>
       </TouchableOpacity>
     );
   }
@@ -209,16 +209,19 @@ const PageManager = ({ route, navigation }) => {
       <View style={styles.header}>
         <IconButton
           style={styles.btHeader}
+          color={'#FEFEFE'}
           disabled={view == 'download'}
           onPress={() => { chageView('download') }}
           title={`Download (${downloadTrails.length})`} />
         <IconButton
           style={styles.btHeader}
+          color={'#FEFEFE'}
           disabled={view == 'update'}
           onPress={() => { chageView('update') }}
           title={`Update (${updateTrails.length})`} />
         <IconButton
           style={styles.btHeader}
+          color={'#FEFEFE'}
           disabled={view == 'queue'}
           onPress={() => { chageView('queue') }}
           title={`Queue (${queueTrails.length})`} />
@@ -249,7 +252,8 @@ const styles = StyleSheet.create({
   fullscreen: {
     flex: 1,
     flexDirection: 'column',
-    position: 'relative'
+    position: 'relative',
+    backgroundColor: '#FEFEFE'
   },
   fullscreenAbs: {
     position: 'absolute',
@@ -266,7 +270,6 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 60,
-    backgroundColor: 'blue',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingTop: 8,
@@ -275,10 +278,13 @@ const styles = StyleSheet.create({
     paddingRight: 4
   },
   btHeader: {
-    backgroundColor: 'green',
+    backgroundColor: '#50723c',
     marginLeft: 4,
     marginRight: 4,
-    flex: 1
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   item: {
     height: 50,
@@ -290,22 +296,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginLeft: 8,
     marginRight: 8,
-    backgroundColor: '#e3e3e3'
-  },
-  btFilter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: 'green'
-  },
-  btShow: {
-    marginLeft: 8,
-    backgroundColor: 'white',
-    height: 50,
-    width: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: '#EFEFEF'
   }
 });
 
