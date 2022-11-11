@@ -15,11 +15,11 @@ React Native project. Use local storage with SQLite, Leaflet as map library, Fla
 
 The app has 4 screens, (5 reals). Later I explain each one, but first I comment how load the data and how is the navigation.
 As you can see, allways pass the same json through screen, but one not. The json:
-```json
+```
 {
-    "filter": Town | null,
-    "view": "map" | "list",
-//  "id": int
+    filter: Town | null,
+    view: "map" | "list",
+//  id: int
 }
 ```
 indicates the state of the home page. To keep the state of the Home, everypage page must return the json. Filter page is the only one who can change the filter value. Home page is the only one who can change the view value.
