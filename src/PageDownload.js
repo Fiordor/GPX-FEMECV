@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,17 +41,6 @@ const PageDownload = ({ route, navigation }) => {
       sql = sql.substring(0, sql.length - 1) + ';';
       await DB.exec(sql);
     }
-
-    /*
-    setMsgProcess('Load trails...')
-    trails = await DB.exec('SELECT * FROM trails ORDER BY id');
-
-    for (let i = 0; i < trails.length; i++) {
-      if (trails[i].points == 1) {
-        trails[i].points = await DB.exec('SELECT id, lat, lng FROM points WHERE trail = ? ORDER BY id', [trails[i].id]);
-      }
-    }
-    */
 
     navigation.navigate('PageHome');
   }
